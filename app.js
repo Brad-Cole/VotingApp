@@ -9,29 +9,19 @@ const ProductList = React.createClass ({
     this.updateState();
   },
 
-  handleClick: function(){
+  toggleSortDirection: function(){
       if (this.state.sorting === 'descending'){
         this.setState({sorting: 'ascending'});
-        this.updateState();
       } else {
         this.setState({sorting: 'descending'});
-        this.updateState();
       }
-    },
+      this.updateState();
+  },
 
   updateState: function(){
-    if (this.state.sorting === 'descending'){
-      const products = Data.sort((a, b) => {
-        return b.votes - a.votes;
-          });
-            this.setState({ products: products });
-          } else {
-            const products = Data.sort((b, a) => {
-              return b.votes - a.votes;
-          });
-        this.setState({ products: products });
-      }
-    },
+    const products = this.getSortedData();
+    this.setState({ products: products });
+  },
 
   handleProductUpVote: function (productId) {
     Data.forEach((el) => {
@@ -54,8 +44,19 @@ const ProductList = React.createClass ({
     this.updateState();
     console.log(productId + " was downvoted.");
   },
+  getSortedData: function () {
+    if (this.state.sorting === 'descending') {
+        return Data.sort((a, b) => {
+            return b.votes - a.votes;
+        });
+    } else if (this.state.sorting === 'ascending') {
+        return Data.sort((b, a) => {
+            return b.votes - a.votes;
+        });
+    }
+  },
   render: function () {
-    const products = this.state.products.map((product) => {
+    const products = this.getSortedData().map((product) => {
     	return (
         <Product
           key={'product-' + product.id}
@@ -74,7 +75,7 @@ const ProductList = React.createClass ({
 		return (
       <div>
         <div>
-          <button className={this.state.sorting} onClick={this.handleClick}>Toggle Sorting</button> Currently {this.state.sorting}
+          <button className={this.state.sorting} onClick={this.toggleSortDirection}>Toggle Sorting</button> Currently {this.state.sorting}
         </div>
 			  <div className='ui items'>
       	  {products}
